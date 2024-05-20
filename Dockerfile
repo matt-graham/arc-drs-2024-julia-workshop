@@ -5,7 +5,11 @@ FROM julia:1.10.3
 # # way, so we have to keep an external script and source it every time we need it.
 # COPY julia_cpu_target.sh /julia_cpu_target.sh
 
-RUN julia --color=yes -e 'using InteractiveUtils; versioninfo()'
+RUN julia --color=yes -e '\
+    using InteractiveUtils; \
+    versioninfo(); \
+    default_num_tasks = Sys.iswindows() ? div(Sys.CPU_THREADS::Int, 2) + 1 : Sys.CPU_THREADS::Int + 1; \
+    @show default_num_tasks'
 
 # # Instantiate Julia project
 # RUN mkdir -p /root/.julia/environments/v1.10
